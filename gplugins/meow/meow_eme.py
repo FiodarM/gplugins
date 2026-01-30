@@ -226,7 +226,11 @@ class MEOW:
         wavelengths = wavelengths or np.linspace(1.5, 1.6, 101)
         color = color or (0.9, 0.9, 0.9, 0.9)
         PDK = get_active_pdk()
-        ns = PDK.materials_index[material_name](wavelengths)
+        material = PDK.materials_index[material_name]
+        if callable(material):
+            ns = material(wavelengths)
+        else:
+            ns = material * np.ones_like(wavelengths)
         if ns.dtype in [np.float64, np.float32]:
             nr = ns
             ni = np.zeros_like(ns)
