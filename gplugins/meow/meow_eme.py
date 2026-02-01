@@ -452,13 +452,31 @@ class MEOW:
     def compute_mode(self, xs_num):
         return mw.compute_modes(self.css[xs_num], num_modes=self.num_modes)
 
-    def compute_all_modes(self) -> None:
-        self.modes_per_cell = []
-        for cs in tqdm(self.css):
-            modes_in_cs = mw.compute_modes(cs, num_modes=self.num_modes)
-            self.modes_per_cell.append(modes_in_cs)
+    def compute_all_modes(self, n_jobs=1) -> None:
+        """Compute modes for all cross-sections.
 
-    def compute_sparameters(self) -> dict[str, np.ndarray]:
+        Args:
+            np: number of jobs to use for parallelization (joblib `n_jobs`).
+                Use 1 for sequential computation (default). Use None to use all CPUs.
+        """
+        from joblib import Parallel, delayed
+
+        n_jobs = int(n_jobs) if n_jobs is not None else None
+
+        if n_jobs == 1:
+            # Sequential computation with a progress bar
+            self.modes_per_cell = [
+                mw.compute_modes(cs, num_modes=self.num_modes) for cs in tqdm(self.css)
+            ]
+        else:
+            # Parallel computation using joblib
+            tasks = (
+                delayed(mw.compute_modes)(cs, num_modes=self.num_modes)
+                for cs in tqdm(self.css)
+            )
+            self.modes_per_cell = Parallel(n_jobs=n_jobs)(tasks)
+
+    def compute_sparameters(self, n_jobs=1) -> dict[str, np.ndarray]:
         """Returns Sparameters using EME."""
         if self.filepath.exists():
             if not self.overwrite:
@@ -480,7 +498,7 @@ class MEOW:
 
         start = time.time()
 
-        self.compute_all_modes()
+        self.compute_all_modes(n_jobs=n_jobs)
 
         self.S, self.port_map = _compute_s_matrix(self.modes_per_cell, self.cells)
 
