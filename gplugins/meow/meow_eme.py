@@ -206,10 +206,12 @@ class MEOW:
         ys = list_unique_layer_stack_z(layer_stack)
         y_min, y_max = np.min(ys) + 1e-10, np.max(ys) - 1e-10
 
+        self.spacing_x = spacing_x
         self.span_x = x_max - x_min + spacing_x
         self.center_x = center_x if center_x is not None else 0.5 * (x_max + x_min)
         self.resolution_x = resolution_x
 
+        self.spacing_y = spacing_y
         self.span_y = y_max - y_min + spacing_y
         self.center_y = center_y if center_y is not None else 0.5 * (y_max + y_min)
         self.resolution_y = resolution_y
@@ -327,6 +329,8 @@ class MEOW:
                     gf.components.bbox(
                         component,
                         layer=(global_layer_index, 0),
+                        bottom=self.spacing_x,
+                        top=self.spacing_x,
                     )
                 )
                 layer = (global_layer_index, 0)
