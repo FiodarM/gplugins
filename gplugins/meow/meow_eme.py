@@ -273,7 +273,8 @@ class MEOW:
         self, material_name: str = "si", wavelengths=None, color=None
     ):
         """Converts a gdsfactory material into a MEOW material."""
-        wavelengths = wavelengths or np.linspace(1.5, 1.6, 101)
+        if wavelengths is None:
+            wavelengths = np.linspace(1.5, 1.6, 101)
         color = color or (0.9, 0.9, 0.9, 0.9)
         PDK = get_active_pdk()
         material = PDK.materials_index[material_name]
