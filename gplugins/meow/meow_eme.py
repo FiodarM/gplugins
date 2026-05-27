@@ -461,7 +461,7 @@ class MEOW:
         """Compute modes for all cross-sections.
 
         Args:
-            np: number of jobs to use for parallelization (joblib `n_jobs`).
+            n_jobs: number of jobs to use for parallelization (joblib `n_jobs`).
                 Use 1 for sequential computation (default). Use None to use all CPUs.
         """
         from joblib import Parallel, delayed
