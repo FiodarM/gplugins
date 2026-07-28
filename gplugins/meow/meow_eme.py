@@ -278,7 +278,10 @@ class MEOW:
         color = color or (0.9, 0.9, 0.9, 0.9)
         PDK = get_active_pdk()
         material = PDK.materials_index[material_name]
-        if callable(material):
+        if isinstance(material, tuple):
+            n, k = material
+            ns = n + 1j * k
+        elif callable(material):
             ns = material(wavelengths)
         else:
             ns = material * np.ones_like(wavelengths)
