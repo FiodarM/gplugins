@@ -226,6 +226,9 @@ class MEOW:
         self.num_cells = max(int(self.span_z / cell_length) + 2, 4)
 
         # Setup simulation
+        component = layer_stack.get_component_with_derived_layers(
+            component
+        )
         self.component, self.layer_stack = self.add_global_layers(
             component, layer_stack
         )
